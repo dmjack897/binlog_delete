@@ -25,28 +25,28 @@ exec_mode() {
 exec_mode $@
 echo "START:"`date`
 if [ "${mode}" = "dry_run" ]; then
-    #削除対象出力
+    #삭제대상 출력
     find ${BIN_LOG} -name "mysql-bin.*" -mtime +3  -exec ls -l {} \;
 
 elif [ "${mode}" = "delete" ]; then
-    #削除前、ディスクの空きサイズ確認
+    #삭제전,disk사이즈확인
     df_command="df -h"
     eval ${df_command}
 
-    #binログ確認
+    #bin로그 확인
     find ${BIN_LOG} -name "mysql-bin.*" -exec ls -l {} \;
 
-    #接続MySQL確認
+    #MySQL Host확인
     /usr/local/mysql/bin/mysql -u dba -pgnavidba mysql -t -e "select @@hostname"
 
-    #削除
+    #삭제
     /usr/local/mysql/bin/mysql -u dba -pgnavidba mysql -t -e "purge master logs before (now() - interval 3 day);" 
 
-    #削除後、binログ状況
+    #삭제후, bin로그확인
 　　ls_command="ls -l /db/data/mysql-bin.*"
     eval ${ls_command}
 
-    #削除後、ディスクの空きサイズ確認
+    #삭제후,disk사이즈확인
     eval ${df_command}
 fi
 echo "END:"`date`
